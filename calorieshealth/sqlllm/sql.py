@@ -1,22 +1,24 @@
 from dotenv import load_dotenv
-
-load_dotenv()  # take environment variables from .env.
-
 import streamlit as st
 import os
-import pathlib
-import textwrap
+# import pathlib
+# import textwrap
 import sqlite3
-
 import google.generativeai as genai
 
-os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+load_dotenv()  # take environment variables from .env.
+api_key = os.getenv("GOOGLE_API_KEY")
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+if not api_key:
+    st.error("API key not found. Make sure it's set in your .env file.")
+else:
+    genai.configure(api_key=api_key)
 
 ## Function to load OpenAI model and get respones
 
 def get_gemini_response(question,prompt):
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-2.0-flash')
     response = model.generate_content([prompt[0],question])
     print(response.text)
     output = read_sql_query(response.text, "test.db")
